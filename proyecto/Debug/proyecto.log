@@ -1,0 +1,12 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(534,5): warning MSB8028: El directorio intermedio (Debug\) contiene archivos compartidos de otro proyecto (ejercicio8.vcxproj, practica7.vcxproj, practica8.vcxproj). Esto puede dar lugar a un comportamiento incorrecto de limpieza y recompilación.
+  main.cpp
+D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\Window.h(12,36): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+  (compilando archivo de origen "main.cpp")
+  
+D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
+  (compilando archivo de origen "main.cpp")
+  
+D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(288,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(290,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(307,15): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+  proyecto.vcxproj -> D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\Debug\proyecto.exe
