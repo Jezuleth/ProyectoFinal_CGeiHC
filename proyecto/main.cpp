@@ -73,7 +73,7 @@ static double limitFPS = 1.0 / 60.0;
 //Hora del Día
 GLfloat acumulador = 0.0f;
 GLint segundos = 0;
-GLfloat dayDuration = 48.f;
+GLfloat dayDuration = 24.0f*2;
 GLfloat timeOfDay = 0.0f;
 
 
@@ -239,6 +239,7 @@ int main()
 	Crash_Bandicoot = Model();
 	Crash_Bandicoot.LoadModel("Models/Crash.obj");
 
+	/*
 	std::vector<std::string> skyboxFaces;
 	skyboxFaces.push_back("Textures/Skybox/posx.jpg");
 	skyboxFaces.push_back("Textures/Skybox/negx.jpg");
@@ -246,8 +247,31 @@ int main()
 	skyboxFaces.push_back("Textures/Skybox/posy.jpg");
 	skyboxFaces.push_back("Textures/Skybox/posz.jpg");
 	skyboxFaces.push_back("Textures/Skybox/negz.jpg");
+	*/
 
-	skybox = Skybox(skyboxFaces);
+	std::vector<std::string> dayFaces = {
+	"Textures/Skybox/dia/cupertin-lake_rt_r.tga",
+	"Textures/Skybox/dia/cupertin-lake_lf_r.tga",
+	"Textures/Skybox/dia/cupertin-lake_up.tga",
+	"Textures/Skybox/dia/cupertin-lake_dn.tga",
+	"Textures/Skybox/dia/cupertin-lake_ft_r.tga",
+	"Textures/Skybox/dia/cupertin-lake_bk_r.tga"
+	};
+
+	std::vector<std::string> nightFaces = {
+		"Textures/Skybox/noche/cupertin-lake-night_rt_r.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_lf_r.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_up.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_dn.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_ft_r.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_bk_r.tga"
+	};
+
+
+
+	//skybox = Skybox(skyboxFaces);
+	skybox = Skybox(dayFaces, nightFaces); // Usa el constructor que acepta dos texturas
+
 
 	Material_brillante = Material(4.0f, 256);
 	Material_opaco = Material(0.3f, 4);
@@ -313,11 +337,14 @@ int main()
 		glm::vec3 nightColor(0.3f, 0.3f, 0.3f);
 
 		float lightAmount = glm::clamp(sin(angle), 0.0f, 1.0f);
+		float blendFactor = lightAmount; // 0 = noche, 1 = día
+
 		glm::vec3 currentColor = glm::mix(nightColor, dayColor, lightAmount);
 
 		mainLight.setColor(currentColor.r, currentColor.g, currentColor.b);
 		mainLight.setAmbientIntensity(lightAmount * 0.9f);
 		mainLight.setDiffuseIntensity(lightAmount);
+		//Termina la zona de los ciclos
 
 
 		//Recibir eventos del usuario
@@ -328,7 +355,9 @@ int main()
 		// Clear the window
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		skybox.DrawSkybox(camera.calculateViewMatrix(), projection);
+		//skybox.DrawSkybox(camera.calculateViewMatrix(), projection);
+		skybox.DrawSkybox(camera.calculateViewMatrix(), projection, blendFactor);
+
 		shaderList[0].UseShader();
 		uniformModel = shaderList[0].GetModelLocation();
 		uniformProjection = shaderList[0].GetProjectionLocation();

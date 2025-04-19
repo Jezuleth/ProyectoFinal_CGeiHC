@@ -285,6 +285,10 @@ void Shader::AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderT
 	glAttachShader(theProgram, theShader);
 }
 
+GLuint Shader::GetShaderID() const {
+	return shaderID;
+}
+
 Shader::~Shader()
 {
 	ClearShader();

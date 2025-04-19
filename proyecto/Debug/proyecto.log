@@ -6,7 +6,8 @@ D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\Window.h(12
 D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\Window.h(13,37): warning C4244: 'return': conversión de 'GLint' a 'GLfloat'; posible pérdida de datos
   (compilando archivo de origen "main.cpp")
   
-D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(288,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(290,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
-D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(307,15): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(312,15): warning C4244: 'inicializando': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(314,33): warning C4244: '+=': conversión de 'double' a 'GLfloat'; posible pérdida de datos
+D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\proyecto\main.cpp(331,15): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
   proyecto.vcxproj -> D:\proyectos VS\Visual Studio 2022\Proyecto_Base_1\proyecto\Debug\proyecto.exe
