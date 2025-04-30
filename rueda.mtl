@@ -1,0 +1,42 @@
+# Blender 3.6.22 MTL File: 'dreepy.blend'
+# www.blender.org
+
+newmtl Azul_Clarito.003
+Ns 646.133789
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd rayquaza_colors.png
+
+newmtl Coches.002
+Ns 650.708130
+Ka 1.000000 1.000000 1.000000
+Ks 0.667665 0.667665 0.667665
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd rayquaza_colors.png
+
+newmtl Morado.003
+Ns 216.988785
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd rayquaza_colors.png
+
+newmtl Morado_clarito.003
+Ns 394.034424
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd rayquaza_colors.png
