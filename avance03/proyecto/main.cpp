@@ -1,0 +1,442 @@
+/*
+Práctica 8: Iluminación 2
+*/
+//para cargar imagen
+#define STB_IMAGE_IMPLEMENTATION
+
+#include <stdio.h>
+#include <string.h>
+#include <cmath>
+#include <vector>
+#include <math.h>
+#include <glew.h>
+#include <glfw3.h>
+
+#include <glm.hpp>
+#include <gtc\matrix_transform.hpp>
+#include <gtc\type_ptr.hpp>
+//para probar el importer
+//#include<assimp/Importer.hpp>
+
+#include "Window.h"
+#include "Mesh.h"
+#include "Shader_light.h"
+#include "Camera.h"
+#include "Texture.h"
+#include "Sphere.h"
+#include"Model.h"
+#include "Skybox.h"
+#include "Crash.h"
+
+
+//para iluminación
+#include "CommonValues.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "Material.h"
+const float toRadians = 3.14159265f / 180.0f;
+
+//Declaración de Luces puntuales y spotlight
+PointLight pointLights[MAX_POINT_LIGHTS];
+unsigned int pointLightCount = 0;
+
+SpotLight spotLights[MAX_SPOT_LIGHTS];
+unsigned int spotLightCount = 0;
+
+// luz direccional
+DirectionalLight mainLight;
+
+Window mainWindow;
+std::vector<Mesh*> meshList;
+std::vector<Shader> shaderList;
+
+Camera camera;
+
+Texture brickTexture;
+Texture dirtTexture;
+Texture plainTexture;
+Texture pisoTexture;
+
+
+Model Coco_Bandicoot;
+
+
+Crash crashPersonaje;  // Declaras el personaje (automáticamente trae sus partes)
+
+Skybox skybox;
+
+//materiales
+Material Material_brillante;
+Material Material_opaco;
+
+GLfloat deltaTime = 0.0f;
+GLfloat lastTime = 0.0f;
+static double limitFPS = 1.0 / 60.0;
+
+//Hora del Día
+GLfloat acumulador = 0.0f;
+GLint segundos = 0;
+GLfloat dayDuration = 24.0f*2;
+GLfloat timeOfDay = 0.0f;
+
+
+// Vertex Shader
+static const char* vShader = "shaders/shader_light.vert";
+
+// Fragment Shader
+static const char* fShader = "shaders/shader_light.frag";
+
+
+void printMatrix(const glm::mat4& mat) {
+	const float* m = glm::value_ptr(mat); // Obtiene un puntero al arreglo de la matriz
+
+	std::cout << "[ ";
+	for (int i = 0; i < 4; ++i) {
+		std::cout << "[ ";
+		for (int j = 0; j < 4; ++j) {
+			std::cout << m[i * 4 + j] << " "; // Imprime cada elemento de la matriz
+		}
+		std::cout << "]" << std::endl;
+	}
+	std::cout << "]" << std::endl;
+}
+
+
+//función de calculo de normales por promedio de vértices 
+void calcAverageNormals(unsigned int* indices, unsigned int indiceCount, GLfloat* vertices, unsigned int verticeCount,
+	unsigned int vLength, unsigned int normalOffset)
+{
+	for (size_t i = 0; i < indiceCount; i += 3)
+	{
+		unsigned int in0 = indices[i] * vLength;
+		unsigned int in1 = indices[i + 1] * vLength;
+		unsigned int in2 = indices[i + 2] * vLength;
+		glm::vec3 v1(vertices[in1] - vertices[in0], vertices[in1 + 1] - vertices[in0 + 1], vertices[in1 + 2] - vertices[in0 + 2]);
+		glm::vec3 v2(vertices[in2] - vertices[in0], vertices[in2 + 1] - vertices[in0 + 1], vertices[in2 + 2] - vertices[in0 + 2]);
+		glm::vec3 normal = glm::cross(v1, v2);
+		normal = glm::normalize(normal);
+
+		in0 += normalOffset; in1 += normalOffset; in2 += normalOffset;
+		vertices[in0] += normal.x; vertices[in0 + 1] += normal.y; vertices[in0 + 2] += normal.z;
+		vertices[in1] += normal.x; vertices[in1 + 1] += normal.y; vertices[in1 + 2] += normal.z;
+		vertices[in2] += normal.x; vertices[in2 + 1] += normal.y; vertices[in2 + 2] += normal.z;
+	}
+
+	for (size_t i = 0; i < verticeCount / vLength; i++)
+	{
+		unsigned int nOffset = i * vLength + normalOffset;
+		glm::vec3 vec(vertices[nOffset], vertices[nOffset + 1], vertices[nOffset + 2]);
+		vec = glm::normalize(vec);
+		vertices[nOffset] = vec.x; vertices[nOffset + 1] = vec.y; vertices[nOffset + 2] = vec.z;
+	}
+}
+
+
+void CreateObjects()
+{
+	unsigned int indices[] = {
+		0, 3, 1,
+		1, 3, 2,
+		2, 3, 0,
+		0, 1, 2
+	};
+
+	GLfloat vertices[] = {
+		//	x      y      z			u	  v			nx	  ny    nz
+			-1.0f, -1.0f, -0.6f,	0.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+			0.0f, -1.0f, 1.0f,		0.5f, 0.0f,		0.0f, 0.0f, 0.0f,
+			1.0f, -1.0f, -0.6f,		1.0f, 0.0f,		0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f,		0.5f, 1.0f,		0.0f, 0.0f, 0.0f
+	};
+
+	unsigned int floorIndices[] = {
+		0, 2, 1,
+		1, 2, 3
+	};
+
+	GLfloat floorVertices[] = {
+		-10.0f, 0.0f, -10.0f,	0.0f, 0.0f,		0.0f, -1.0f, 0.0f,
+		10.0f, 0.0f, -10.0f,	50.0f, 0.0f,	0.0f, -1.0f, 0.0f,
+		-10.0f, 0.0f, 10.0f,	0.0f, 50.0f,	0.0f, -1.0f, 0.0f,
+		10.0f, 0.0f, 10.0f,		50.0f, 50.0f,	0.0f, -1.0f, 0.0f
+	};
+
+	unsigned int vegetacionIndices[] = {
+	   0, 1, 2,
+	   0, 2, 3,
+	   4,5,6,
+	   4,6,7
+	};
+
+	GLfloat vegetacionVertices[] = {
+		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f,		0.0f, 0.0f, -1.0f,
+		0.5f, -0.5f, 0.0f,		1.0f, 0.0f,		0.0f, 0.0f, -1.0f,
+		0.5f, 0.5f, 0.0f,		1.0f, 1.0f,		0.0f, 0.0f, -1.0f,
+		-0.5f, 0.5f, 0.0f,		0.0f, 1.0f,		0.0f, 0.0f, -1.0f,
+
+		0.0f, -0.5f, -0.5f,		0.0f, 0.0f,		0.0f, 0.0f, -1.0f,
+		0.0f, -0.5f, 0.5f,		1.0f, 0.0f,		0.0f, 0.0f, -1.0f,
+		0.0f, 0.5f, 0.5f,		1.0f, 1.0f,		0.0f, 0.0f, -1.0f,
+		0.0f, 0.5f, -0.5f,		0.0f, 1.0f,		0.0f, 0.0f, -1.0f,
+
+
+	};
+
+	unsigned int wallIndices[] = {
+		0, 2, 1,
+		1, 2, 3
+	};
+
+	GLfloat wallVertices[] = {
+		10.0f, 40.0f, -30.0f,	0.0f, 0.0f,		1.0f, 0.0f, 0.0f,
+		10.0f, 40.0f, 0.0f,		1.0f, 0.0f,		1.0f, 0.0f, 0.0f,
+		10.0f, 0.0f, -30.0f,	0.0f, 4.0f,		1.0f, 0.0f, 0.0f,
+		10.0f, 0.0f, 0.0f,		1.0f, 4.0f,		1.0f, 0.0f, 0.0f
+	};
+
+	Mesh* obj1 = new Mesh();
+	obj1->CreateMesh(vertices, indices, 32, 12);
+	meshList.push_back(obj1);
+
+	Mesh* obj2 = new Mesh();
+	obj2->CreateMesh(vertices, indices, 32, 12);
+	meshList.push_back(obj2);
+
+	Mesh* obj3 = new Mesh();
+	obj3->CreateMesh(floorVertices, floorIndices, 32, 6);
+	meshList.push_back(obj3);
+
+	Mesh* obj4 = new Mesh();
+	obj4->CreateMesh(vegetacionVertices, vegetacionIndices, 64, 12);
+	meshList.push_back(obj4);
+
+	Mesh* obj5 = new Mesh();
+	obj5->CreateMesh(wallVertices, wallIndices, 64, 12);
+	meshList.push_back(obj5);
+
+	calcAverageNormals(indices, 12, vertices, 32, 8, 5);
+
+	calcAverageNormals(vegetacionIndices, 12, vegetacionVertices, 64, 8, 5);
+
+}
+
+
+
+void CreateShaders()
+{
+	Shader* shader1 = new Shader();
+	shader1->CreateFromFiles(vShader, fShader);
+	shaderList.push_back(*shader1);
+}
+
+
+
+int main()
+{
+	mainWindow = Window(1366, 768); // 1280, 1024 or 1024, 768
+	mainWindow.Initialise();
+
+	CreateObjects();
+	CreateShaders();
+
+	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f, 0.0f, 0.3f, 0.5f);
+
+	plainTexture = Texture("Textures/plain.png");
+	plainTexture.LoadTextureA();
+	pisoTexture = Texture("Textures/piso.jpg");
+	pisoTexture.LoadTextureA();
+
+
+	//Modelos
+	Coco_Bandicoot = Model();
+	Coco_Bandicoot.LoadModel("Models/Coco.obj");
+	
+	std::vector<std::string> dayFaces = {
+		"Textures/Skybox/dia/ocean_rt_r.png",
+		"Textures/Skybox/dia/ocean_lf_r.png",
+		"Textures/Skybox/dia/ocean_up.png",
+		"Textures/Skybox/dia/ocean_dn.png",
+		"Textures/Skybox/dia/ocean_bk_r.png",
+		"Textures/Skybox/dia/ocean_ft_r.png"
+	};
+
+	std::vector<std::string> nightFaces = {
+		"Textures/Skybox/noche/ocean_rt_r.png",
+		"Textures/Skybox/noche/ocean_lf_r.png",
+		"Textures/Skybox/noche/ocean_up.png",
+		"Textures/Skybox/noche/ocean_dn.png",
+		"Textures/Skybox/noche/ocean_bk_r.png",
+		"Textures/Skybox/noche/ocean_ft_r.png"
+	};
+	
+	/*
+	std::vector<std::string> dayFaces = {
+	"Textures/Skybox/dia/cupertin-lake_rt_r.tga",
+	"Textures/Skybox/dia/cupertin-lake_lf_r.tga",
+	"Textures/Skybox/dia/cupertin-lake_up.tga",
+	"Textures/Skybox/dia/cupertin-lake_dn.tga",
+	"Textures/Skybox/dia/cupertin-lake_ft_r.tga",
+	"Textures/Skybox/dia/cupertin-lake_bk_r.tga"
+	};
+	
+	std::vector<std::string> nightFaces = {
+		"Textures/Skybox/noche/cupertin-lake-night_rt_r.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_lf_r.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_up.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_dn.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_ft_r.tga",
+		"Textures/Skybox/noche/cupertin-lake-night_bk_r.tga"
+	};
+	*/
+
+
+	//skybox = Skybox(skyboxFaces);
+	skybox = Skybox(dayFaces, nightFaces); // Usar el constructor que acepta dos texturas
+
+
+	Material_brillante = Material(4.0f, 256);
+	Material_opaco = Material(0.3f, 4);
+
+
+	//luz direccional, sólo 1 y siempre debe de existir
+	//Para el día
+	mainLight = DirectionalLight(1.0f, 1.0f, 1.0f,
+		0.8f, 0.1f,
+		0.0f, -1.0f, 0.0f);
+
+	/*
+	//Luz de la lampara
+	pointLights[0] = PointLight(1.0f, 1.0f, 1.0f,
+		0.4f, 4.0f,
+		-4.0f, 4.0f, 4.0f,
+		0.3f, 0.2f, 0.1f);
+	pointLightCount++;
+
+	//luz cofre
+	spotLights[0] = SpotLight(1.0f, 0.5f, 0.2f,
+		1.0f, 1.0f,
+		10.85f, 3.0f, -15.2f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		5.0f);
+	spotLightCount++;
+	*/
+
+	GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformEyePosition = 0,
+		uniformSpecularIntensity = 0, uniformShininess = 0;
+	GLuint uniformColor = 0;
+	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 1000.0f);
+
+	glm::mat4 model(1.0);
+	glm::mat4 modelaux(1.0);
+	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	crashPersonaje.init(); // Carga todos los modelos del personaje principal (cuerpo, piernas, pies, etc.)
+
+	////Loop mientras no se cierra la ventana
+	while (!mainWindow.getShouldClose())
+	{
+		GLfloat now = glfwGetTime();
+		deltaTime = now - lastTime;
+		deltaTime += (now - lastTime) / limitFPS;
+		lastTime = now;
+
+		acumulador += deltaTime;
+
+		//Ciclo Día-Noche
+		if (acumulador >= 60.0f) {
+			segundos++;
+			timeOfDay++;
+			acumulador -= 60.0f;
+		}
+
+		//Zona de ciclo dia noche
+		if (timeOfDay > dayDuration)
+			timeOfDay -= dayDuration;
+
+		float timePercent = timeOfDay / dayDuration;
+		float angle = timePercent * 2.0f * M_PI;
+
+		glm::vec3 sunDir = glm::normalize(glm::vec3(cos(angle), sin(angle), 0.0f));
+		mainLight.setDirection(sunDir.x, sunDir.y, sunDir.z);
+
+		glm::vec3 dayColor(1.0f, 1.0f, 1.0f);
+		glm::vec3 nightColor(0.3f, 0.3f, 0.3f);
+
+		float lightAmount = glm::clamp(sin(angle), 0.0f, 1.0f);
+		float blendFactor = lightAmount; // 0 = noche, 1 = día
+
+		glm::vec3 currentColor = glm::mix(nightColor, dayColor, lightAmount);
+
+		mainLight.setColor(currentColor.r, currentColor.g, currentColor.b);
+		mainLight.setAmbientIntensity(lightAmount * 0.9f);
+		mainLight.setDiffuseIntensity(lightAmount);
+		//Termina la zona de los ciclos
+
+
+		//Recibir eventos del usuario
+		glfwPollEvents();
+
+		//Cámaras
+		if (mainWindow.getCamera() == 0)
+		{
+			//Cámara 3era Perona
+			camera.followPlayer(crashPersonaje.getPosition(), 10.0f, 0.0f, crashPersonaje.getYaw(), -20.0f);
+			//printf("x = %f, y = %f, z = %f\n", crashPersonaje.getFront().x, crashPersonaje.getFront().y, crashPersonaje.getFront().z);
+		}
+		else if (mainWindow.getCamera() == 1) {
+			camera.setPosition(glm::vec3(0.0f, 80.0f, 0.0f), -90.0f, -90.0f);  // Cámara aérea
+		}
+		else {
+			camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange()); //Cámara libre
+		}
+		camera.keyControl(mainWindow.getsKeys(), deltaTime);
+		glm::mat4 view = camera.calculateViewMatrix();
+
+		// Clear the window
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//skybox.DrawSkybox(camera.calculateViewMatrix(), projection);
+		skybox.DrawSkybox(view, projection, blendFactor);
+
+		shaderList[0].UseShader();
+		uniformModel = shaderList[0].GetModelLocation();
+		uniformProjection = shaderList[0].GetProjectionLocation();
+		uniformView = shaderList[0].GetViewLocation();
+		uniformEyePosition = shaderList[0].GetEyePositionLocation();
+		uniformColor = shaderList[0].getColorLocation();
+
+		//información en el shader de intensidad especular y brillo
+		uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
+		uniformShininess = shaderList[0].GetShininessLocation();
+
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(view));
+		glUniform3f(uniformEyePosition, camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+
+		//información al shader de fuentes de iluminación
+		shaderList[0].SetDirectionalLight(&mainLight);
+		shaderList[0].SetPointLights(pointLights, pointLightCount);
+		shaderList[0].SetSpotLights(spotLights, spotLightCount);
+
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(30.0f, 1.0f, 30.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+		pisoTexture.UseTexture();
+		Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+		meshList[2]->RenderMesh();
+
+		//Instancia del crash 
+		crashPersonaje.update(mainWindow.getsKeys(), deltaTime);
+		crashPersonaje.render(uniformModel);
+
+		glUseProgram(0);
+
+		mainWindow.swapBuffers();
+	}
+
+	return 0;
+}
