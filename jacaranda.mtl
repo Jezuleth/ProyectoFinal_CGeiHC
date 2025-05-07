@@ -1,0 +1,110 @@
+# Blender 3.6.22 MTL File: 'None'
+# www.blender.org
+
+newmtl Jacaranda_bark
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_bark_01_LOD0_Color.png
+map_Bump Jacaranda_mimosifolia_HD_Jacaranda_bark_01_n_LOD0_Normal.png
+
+newmtl Jacaranda_bark_02
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_bark_02_LOD0_Color.png
+map_Bump Jacaranda_mimosifolia_HD_Jacaranda_bark_02_n_LOD0_Normal.png
+
+newmtl Jacaranda_flower_stalk
+Ns 40.551991
+Ka 1.000000 1.000000 1.000000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_flower_stalk_01_LOD0_Color.png
+
+newmtl Jacaranda_flw_05
+Ns 40.551991
+Ka 1.000000 1.000000 1.000000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_flw_05_Jacaranda_flowers_05_LOD0_Color.png
+map_d Jacaranda_mimosifolia_HD_Jacaranda_flw_05_Jacaranda_flowers_05_a_LOD0_Transparency.png
+map_Bump Jacaranda_mimosifolia_HD_Jacaranda_flw_05_Jacaranda_flowers_05_n_LOD0_Normal.png
+
+newmtl Jacaranda_flw_06
+Ns 40.551991
+Ka 1.000000 1.000000 1.000000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_flw_06_Jacaranda_flowers_06_LOD0_Color.png
+map_d Jacaranda_mimosifolia_HD_Jacaranda_flw_06_Jacaranda_flowers_06_a_LOD0_Transparency.png
+map_Bump Jacaranda_mimosifolia_HD_Jacaranda_flw_06_Jacaranda_flowers_06_n_LOD0_Normal.png
+
+newmtl Jacaranda_flw_07
+Ns 40.551991
+Ka 1.000000 1.000000 1.000000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_flw_07_Jacaranda_flowers_07_LOD0_Color.png
+map_d Jacaranda_mimosifolia_HD_Jacaranda_flw_07_Jacaranda_flowers_07_a_LOD0_Transparency.png
+map_Bump Jacaranda_mimosifolia_HD_Jacaranda_flw_07_Jacaranda_flowers_07_n_LOD0_Normal.png
+
+newmtl Jacaranda_flw_08
+Ns 40.551991
+Ka 1.000000 1.000000 1.000000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_flw_08_Jacaranda_flowers_08_LOD0_Color.png
+map_d Jacaranda_mimosifolia_HD_Jacaranda_flw_08_Jacaranda_flowers_08_a_LOD0_Transparency.png
+map_Bump Jacaranda_mimosifolia_HD_Jacaranda_flw_08_Jacaranda_flowers_08_n_LOD0_Normal.png
+
+newmtl Jacaranda_leaf_04
+Ns 40.551991
+Ka 1.000000 1.000000 1.000000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_leaf_04_LOD0_Color.png
+map_d Jacaranda_mimosifolia_HD_Jacaranda_leaf_04_Jacaranda_leaf_01_a_LOD0_Transparency.png
+map_Bump Jacaranda_mimosifolia_HD_Jacaranda_leaf_04_Jacaranda_leaf_01_n_LOD0_Normal.png
+
+newmtl Jacaranda_leaf_stalk
+Ns 40.551991
+Ka 1.000000 1.000000 1.000000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_leaf_stalk_01_LOD0_Color.png
+
+newmtl Jacaranda_twig
+Ns 40.551991
+Ka 1.000000 1.000000 1.000000
+Ks 0.800000 0.800000 0.800000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Jacaranda_mimosifolia_HD_Jacaranda_twig_01_LOD0_Color.png
+map_Bump Jacaranda_mimosifolia_HD_Jacaranda_twig_01_n_LOD0_Normal.png
